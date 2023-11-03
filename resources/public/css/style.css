@@ -1,0 +1,32 @@
+:root {
+  line-height: 1.15;
+}
+
+.flex {
+  display: flex;
+  align-items: center;
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+.space-y-2 > * + * {
+  margin-top: .5rem;
+}
+
+.space-y-4 > * + * {
+  margin-top: 1rem;
+}
+
+.space-x-2 > * + * {
+  margin-left: .5rem;
+}
+
+.space-x-4 > * + * {
+  margin-left: 1rem;
+}
+
+form fieldset > * + *, form fieldset div > * + * {
+  margin-top: .5rem;
+}
