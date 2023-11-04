@@ -11,7 +11,7 @@
             [contact.handlers.archive :as archive]
             [contact.models :as models]))
 
-(defonce db (atom (into [] (flatten (repeat 10 models/contacts)))))
+(defonce db (atom models/contacts))
 
 #_(swap! db (constantly (into [] (flatten (repeat 10 models/contacts)))))
 #_(swap! db (constantly models/contacts))
