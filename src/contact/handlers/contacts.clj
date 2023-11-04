@@ -3,7 +3,7 @@
             [clojure.string :as str]
             [contact.templates :as templates]))
 
-(defn contacts-page [q contacts]
+(defn contacts-page [q contacts page]
   (templates/layout
    [:form.space-y-2 {:method "get"
                      :action "/contacts"
@@ -26,6 +26,16 @@
                          :style {:margin-left ".5rem"}}
                      "view"]]])
           contacts)]]
+   [:div
+    (when (> page 1)
+      [:a.btn {:href (str "?page=" (dec page)
+                          (when (not (nil? q))
+                            (str "&?q=" q)))
+               :style {:margin-right ".5rem"}} "prev"])
+    (when (= 10 (count contacts))
+      [:a.btn {:href (str "?page=" (inc page)
+                          (when (not (nil? q))
+                            (str "&?q=" q)))} "next"])]
    [:p [:a {:href "/contacts/new"} "add contact"]]))
 
 (defn contacts-search [contacts text]
@@ -37,10 +47,14 @@
                          (not (nil? (re-find re (:email c))))))
              contacts)))
 
-(defn contacts-handler [{:keys [db] :as req}]
-  (let [q (-> req :query-params (get "q"))
+(defn contacts-handler [{:keys [db query-params]}]
+  (let [q        (get query-params "q")
+        page     (-> (or (get query-params "page") "1") Integer/parseInt)
         contacts (if (nil? q)
                    @db
-                   (contacts-search @db (str/lower-case q)))]
-    (res/response (str (contacts-page q contacts)))))
-
+                   (contacts-search @db (str/lower-case q)))
+        paged    (if (> (+ 10 page) (count contacts))
+                   (subvec contacts page)
+                   (subvec contacts page (+ 10 page)))]
+    (res/response
+     (str (contacts-page q paged page)))))

@@ -7,10 +7,12 @@
             [contact.handlers.show :as show]
             [contact.handlers.edit :as edit]
             [contact.handlers.delete :as delete]
+            [contact.handlers.validate :as validate]
             [contact.models :as models]))
 
-(defonce db (atom models/contacts))
+(defonce db (atom (into [] (repeat 10 models/contacts))))
 
+#_(swap! db (constantly (into [] (flatten (repeat 10 models/contacts)))))
 #_(swap! db (constantly models/contacts))
 
 (defn index [_]
@@ -28,14 +30,16 @@
    (ring/router
     [["/" {:get (fn [] (res/redirect "/contacts"))}]
      ["/contacts"
-      [""         {:get contacts/contacts-handler}]
-      ["/new"     {:get  new/new-handler
-                   :post new/post-new-handler}]
+      ["" {:get contacts/contacts-handler}]
+      ["/new" {:get  new/new-handler
+               :post new/post-new-handler}]
       ["/:contact-id"
-       [""        {:get show/show-handler}]
-       ["/edit"   {:get  edit/edit-handler
-                   :post edit/post-edit-handler}]
-       ["/delete" {:post delete/delete-handler}]]]]
+       ["" {:get    show/show-handler
+            :delete delete/delete-handler}]
+       ["/edit" {:get  edit/edit-handler
+                 :post edit/post-edit-handler}]
+       ["/delete" {:post delete/delete-handler}]
+       ["/email" {:get validate/email-handler}]]]]
     {:data {:db db
             :middleware [params/parameters-middleware
                          middleware-db]}

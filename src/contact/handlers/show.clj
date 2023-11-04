@@ -15,9 +15,10 @@
       [:a {:href "/contacts" :style {:margin-left ".5rem"}} "back"]])))
 
 (defn show-handler [{:keys [db] :as req}]
-  (let [contact-id (-> req (get-in [:path-params :contact-id]) Integer/parseInt)
-        contact (models/get-contact-by-id @db contact-id)]
-    (println (filter #(= contact-id (:id %)) @db))
+  (let [contact-id (-> req
+                       (get-in [:path-params :contact-id])
+                       Integer/parseInt)
+        contact    (models/get-contact-by-id @db contact-id)]
     (if (nil? contact)
       (res/not-found "not found")
       (res/response (str (show-page contact))))))

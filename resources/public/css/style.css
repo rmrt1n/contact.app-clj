@@ -1,5 +1,6 @@
 :root {
   line-height: 1.15;
+  --danger: #dc2626;
 }
 
 .flex {
@@ -25,6 +26,10 @@
 
 .space-x-4 > * + * {
   margin-left: 1rem;
+}
+
+.danger {
+  color: var(--danger);
 }
 
 form fieldset > * + *, form fieldset div > * + * {

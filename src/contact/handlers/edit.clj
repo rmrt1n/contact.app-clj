@@ -13,48 +13,60 @@
        [:legend "contact values"]
        [:div
         [:label {:for "email"} "email"]
-        [:input#email {:name "email"
+        [:input#email {:hx-get (str "/contacts/" id "/email")
+                       :hx-target "next .danger"
+                       :hx-trigger "change, keyup delay:200ms changed"
+                       :name "email"
                        :type "email"
                        :required true
                        :placeholder "johndoe@e.com"
                        :value email}]
-        [:span (or (:email errors) "")]]
+        [:span.danger (or (:email errors) "")]]
        [:div
         [:label {:for "first"} "first name"]
         [:input#first {:name "first"
                        :required true
                        :placeholder "john"
                        :value first}]
-        [:span (or (:first errors) "")]]
+        [:span.danger (or (:first errors) "")]]
        [:div
         [:label {:for "last"} "last"]
         [:input#last {:name "last"
                       :required true
                       :placeholder "doe"
                       :value last}]
-        [:span (or (:last errors) "")]]
+        [:span.danger (or (:last errors) "")]]
        [:div
         [:label {:for "phone"} "phone number"]
         [:input#phone {:name "phone"
                        :required true
                        :placeholder "123456789"
                        :value phone}]
-        [:span (or (:phone errors) "")]]
+        [:span.danger (or (:phone errors) "")]]
        [:button "save"]]]
-     [:form {:method "post"
-             :action (str "/contacts/" id "/delete")}
-      [:button "delete contact"]]
+     [:noscript
+      [:form#delete {:method "post"
+                     :action (str "/contacts/" id "/delete")}]]
+     [:button {:hx-delete (str "/contacts/" id)
+               :hx-target "body"
+               :hx-confirm "are you sure you want to delete this contact?"
+               :form "delete"}
+      "delete contact"]
      [:p [:a {:href "/contacts"} "back"]])))
 
 (defn edit-handler [{:keys [db] :as req}]
-  (let [contact-id (-> req (get-in [:path-params :contact-id]) Integer/parseInt)
-        contact (models/get-contact-by-id @db contact-id)]
+  (let [contact-id (-> req
+                       (get-in [:path-params :contact-id])
+                       Integer/parseInt)
+        contact    (models/get-contact-by-id @db contact-id)]
     (if (nil? contact)
       (res/not-found "not found")
       (res/response (str (edit-page contact nil))))))
 
 (defn post-edit-handler [{:keys [form-params db] :as req}]
-  (let [contact-id (-> req (get-in [:path-params :contact-id]) Integer/parseInt)
+  (let [contact-id  (-> req
+                        (get-in [:path-params :contact-id])
+                        Integer/parseInt)
         old-contact (models/get-contact-by-id @db contact-id)
         {:strs [email first last phone]} form-params
         new-contact (assoc old-contact
@@ -62,7 +74,6 @@
                            :first first
                            :last last
                            :phone phone)]
-    (println "this fuck" new-contact)
     (if (models/valid-contact? @db new-contact)
       (do
         (swap! db assoc (dec contact-id) new-contact)

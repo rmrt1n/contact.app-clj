@@ -15,7 +15,7 @@
     [:link {:rel "stylesheet"
             :href "/css/style.css"}]
     [:script {:src "https://unpkg.com/htmx.org@1.9.6"}]]
-   [:body
+   [:body {:hx-boost "true"}
     [:header
      [:nav
       [:a {:href "/"} "contact.app"]]]
