@@ -8,6 +8,7 @@
             [contact.handlers.edit :as edit]
             [contact.handlers.delete :as delete]
             [contact.handlers.validate :as validate]
+            [contact.handlers.archive :as archive]
             [contact.models :as models]))
 
 (defonce db (atom (into [] (flatten (repeat 10 models/contacts)))))
@@ -28,7 +29,7 @@
 (def routes
   (ring/ring-handler
    (ring/router
-    [["/" {:get (fn [] (res/redirect "/contacts"))}]
+    [["/" {:get (fn [_] (res/redirect "/contacts"))}]
      ["/contacts"
       ["" {:get    contacts/contacts-handler
            :post   contacts/contacts-delete-handler
@@ -36,6 +37,7 @@
       ["/new" {:get  new/new-handler
                :post new/post-new-handler}]
       ["/count" {:get contacts/contacts-count-handler}]
+      ["/archive" {:post archive/archive-handler}]
       ["/:contact-id"
        ["" {:get    show/show-handler
             :delete delete/delete-handler}]

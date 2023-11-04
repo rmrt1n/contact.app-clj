@@ -1,7 +1,8 @@
 (ns contact.handlers.contacts
   (:require [ring.util.response :as res]
             [hiccup2.core :as h]
-            [contact.templates :as templates]))
+            [contact.templates :as templates]
+            [contact.handlers.archive :as archive]))
 
 (defn noscript-forms [contacts]
   (->> contacts
@@ -54,6 +55,7 @@
                      :value q}]
      [:div#spin.htmx-indicator.spinner]]
     [:button "search"]]
+   (archive/archive-fragment)
    [:form.space-y-2 {:method "post"
                      :action "/contacts"}
     [:table
