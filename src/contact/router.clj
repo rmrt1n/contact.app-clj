@@ -10,7 +10,7 @@
             [contact.handlers.validate :as validate]
             [contact.models :as models]))
 
-(defonce db (atom (into [] (repeat 10 models/contacts))))
+(defonce db (atom (into [] (flatten (repeat 10 models/contacts)))))
 
 #_(swap! db (constantly (into [] (flatten (repeat 10 models/contacts)))))
 #_(swap! db (constantly models/contacts))
@@ -30,9 +30,12 @@
    (ring/router
     [["/" {:get (fn [] (res/redirect "/contacts"))}]
      ["/contacts"
-      ["" {:get contacts/contacts-handler}]
+      ["" {:get    contacts/contacts-handler
+           :post   contacts/contacts-delete-handler
+           :delete contacts/contacts-delete-handler}]
       ["/new" {:get  new/new-handler
                :post new/post-new-handler}]
+      ["/count" {:get contacts/contacts-count-handler}]
       ["/:contact-id"
        ["" {:get    show/show-handler
             :delete delete/delete-handler}]

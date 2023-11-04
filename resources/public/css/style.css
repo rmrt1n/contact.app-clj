@@ -3,9 +3,19 @@
   --danger: #dc2626;
 }
 
+form fieldset > * + *, form fieldset div > * + * {
+  margin-top: .5rem;
+}
+
+tr.htmx-swapping {
+  opacity: 0;
+  transition: opacity .5s ease-out;
+}
+
 .flex {
   display: flex;
   align-items: center;
+  gap: .5rem;
 }
 
 .flex-col {
@@ -32,6 +42,42 @@
   color: var(--danger);
 }
 
-form fieldset > * + *, form fieldset div > * + * {
-  margin-top: .5rem;
+.htmx-indicator {
+  opacity: 0;
+}
+
+.spinner {
+  width: 1rem; 
+  aspect-ratio: 1;
+  display: grid;
+  -webkit-mask: conic-gradient(from 15deg, #0003,#000);
+          mask: conic-gradient(from 15deg, #0003,#000);
+  animation: load 1s steps(12) infinite;
+  color: var(--muted-fg);
+}
+
+.spinner,
+.spinner:before,
+.spinner:after{
+  background:
+    radial-gradient(closest-side at 50% 12.5%,currentColor 90%,#0000 98%) 
+    50% 0/20% 80% repeat-y,
+    radial-gradient(closest-side at 12.5% 50%,currentColor 90%,#0000 98%) 
+    0 50%/80% 20% repeat-x;
+}
+
+.spinner:before,
+.spinner:after{
+  content: "";
+  grid-area: 1/1;
+  transform: rotate(30deg);
+}
+
+.spinner:after{
+  transform: rotate(60deg);
+}
+
+@keyframes load {
+  from {transform: rotate(0turn)}
+  to   {transform: rotate(1turn)}
 }
