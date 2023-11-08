@@ -1,6 +1,5 @@
 :root {
   line-height: 1.15;
-  --danger: #dc2626;
 }
 
 form fieldset > * + *, form fieldset div > * + * {
@@ -10,36 +9,6 @@ form fieldset > * + *, form fieldset div > * + * {
 tr.htmx-swapping {
   opacity: 0;
   transition: opacity .5s ease-out;
-}
-
-.flex {
-  display: flex;
-  align-items: center;
-  gap: .5rem;
-}
-
-.flex-col {
-  flex-direction: column;
-}
-
-.space-y-2 > * + * {
-  margin-top: .5rem;
-}
-
-.space-y-4 > * + * {
-  margin-top: 1rem;
-}
-
-.space-x-2 > * + * {
-  margin-left: .5rem;
-}
-
-.space-x-4 > * + * {
-  margin-left: 1rem;
-}
-
-.danger {
-  color: var(--danger);
 }
 
 .htmx-indicator {
@@ -75,6 +44,28 @@ tr.htmx-swapping {
 
 .spinner:after{
   transform: rotate(60deg);
+}
+
+.progress {
+  height: .75rem;
+  margin-bottom: 1rem;
+  overflow: hidden;
+  background-color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: calc(var(--border-radius) / 2);
+  max-width: 28rem;
+}
+
+.progress-bar {
+  float: left;
+  width: 0%;
+  height: 100%;
+  font-size: .5rem;
+  line-height: .75rem;
+  color: var(--primary-fg);
+  text-align: center;
+  background-color: var(--primary);
+  transition: width .6s ease;
 }
 
 @keyframes load {

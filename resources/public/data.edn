@@ -1,0 +1,15 @@
+[{:id    1
+  :first "John"
+  :last  "Smith"
+  :phone "123456789"
+  :email "john.smith@e.com"}
+ {:id    2
+  :first "Dana"
+  :last  "Crandith"
+  :phone "123456789"
+  :email "data.crandith@e.com"}
+ {:id    3
+  :first "Edit"
+  :last  "Neutvar"
+  :phone "123456789"
+  :email "edit.neutvar@e.com"}]

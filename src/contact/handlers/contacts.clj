@@ -55,7 +55,7 @@
                      :value q}]
      [:div#spin.htmx-indicator.spinner]]
     [:button "search"]]
-   (archive/archive-fragment)
+   (archive/archive-fragment nil 0)
    [:form.space-y-2 {:method "post"
                      :action "/contacts"}
     [:table

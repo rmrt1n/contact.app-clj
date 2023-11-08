@@ -12,19 +12,26 @@
             [contact.models :as models]))
 
 (defonce db (atom models/contacts))
+(defonce archiver (atom nil))
+(defonce progress (atom 0))
 
-#_(swap! db (constantly (into [] (flatten (repeat 10 models/contacts)))))
-#_(swap! db (constantly models/contacts))
+#_(reset! db (into [] (flatten (repeat 10 models/contacts))))
+#_(reset! db models/contacts)
+#_(reset! progress 0)
+#_(reset! archiver nil)
 
 (defn index [_]
-  (res/response "hi world"))
+  (res/response "ok"))
 
 (def middleware-db
   {:name ::db
    :compile (fn [{:keys [db]} _]
               (fn [handler]
                 (fn [req]
-                  (handler (assoc req :db db)))))})
+                  (handler (assoc req
+                                  :db db
+                                  :progress progress
+                                  :archiver archiver)))))})
 
 (def routes
   (ring/ring-handler
@@ -37,7 +44,11 @@
       ["/new" {:get  new/new-handler
                :post new/post-new-handler}]
       ["/count" {:get contacts/contacts-count-handler}]
-      ["/archive" {:post archive/archive-handler}]
+      ["/archive"
+       ["" {:get archive/archive-handler
+            :post archive/post-archive-handler
+            :delete archive/archive-delete-handler}]
+       ["/file" {:get archive/archive-file-handler}]]
       ["/:contact-id"
        ["" {:get    show/show-handler
             :delete delete/delete-handler}]
@@ -46,6 +57,8 @@
        ["/delete" {:post delete/delete-handler}]
        ["/email" {:get validate/email-handler}]]]]
     {:data {:db db
+            :archiver archiver
+            :progress progress
             :middleware [params/parameters-middleware
                          middleware-db]}
      :conflicts nil})
