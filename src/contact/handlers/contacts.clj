@@ -4,7 +4,22 @@
             [contact.templates :as templates]
             [contact.handlers.archive :as archive]))
 
-(defn noscript-forms [contacts]
+(defn toolbar-fragment []
+  (h/html
+   [:template {:x-if "selected.length > 0"}
+    [:div.card.flex
+     [:slot {:x-text "selected.length"}]
+     " contacts selected"
+     [:button {(keyword "x-on:click")
+               (str "confirm(`delete ${selected.length} contacts?`) &&"
+                    "htmx.ajax('DELETE', 
+                               '/contacts', 
+                               { source: $root, target: document.body})")}
+      "delete"]
+     [:button {(keyword "x-on:click") "selected = []"}
+      "cancel"]]]))
+
+(defn noscript-forms-fragment [contacts]
   (->> contacts
        (map
         (fn [c]
@@ -21,21 +36,40 @@
           (let [{:keys [id first last phone email]} c]
             [:tr
              [:td
-              [:input {:name "selected" :type "checkbox" :value id}]]
-             [:td first]
-             [:td last]
-             [:td phone]
-             [:td email]
+              [:input {:x-model "selected"
+                       :name "selected"
+                       :type "checkbox"
+                       :value id}]]
+             [:td first] [:td last] [:td phone] [:td email]
              [:td
-              [:div.flex
-               [:a {:href (str "/contacts/" id "/edit")} "edit"]
-               [:a {:href (str "/contacts/" id)} "view"]
-               [:button {:hx-delete (str "/contacts/" id)
-                         :hx-target "closest tr"
-                         :hx-swap "outerHTML swap:.5s"
-                         :hx-confirm "are you sure you want to delete this contact?"
-                         :id (str "hx-delete-" id)
-                         :form (str "delete-" id)} "delete"]]]])))
+              [:div {:data-overflow-menu true}
+               [:button {:type "button"
+                         :aria-haspopup "menu"
+                         :aria-controls (str "contact-menu-" id)}
+                "options"]
+               [:div {:id (str "contact-menu-" id)
+                      :role "menu"
+                      :hidden true
+                      :style {:position "relative"}}
+                [:div.card.flex.flex-col
+                 {:style {:position "absolute"
+                          :z-index 10
+                          :left "50%"
+                          :align-items "start"
+                          :background "var(--bg)"
+                          :border-radius "var(--border-radius)"}}
+                 [:a {:role "menu-item" :href (str "/contacts/" id "/edit")}
+                  "edit"]
+                 [:a {:role "menu-item " :href (str "/contacts/" id)}
+                  "view"]
+                 [:button {:hx-delete (str "/contacts/" id)
+                           :hx-target "closest tr"
+                           :hx-swap "outerHTML swap:.5s"
+                           :hx-confirm "are you sure you want to delete this contact?"
+                           :id (str "hx-delete-" id)
+                           :role "menu-item"
+                           :form (str "delete-" id)} "delete"]]]]]])))
+
        h/html))
 
 (defn contacts-page [q contacts page]
@@ -50,13 +84,15 @@
                      :hx-target "tbody"
                      :hx-push-url "true"
                      :hx-indicator "#spin"
+                     :_ "on keydown from the window me.focus()"
                      :name "q"
                      :type "search"
                      :value q}]
      [:div#spin.htmx-indicator.spinner]]
     [:button "search"]]
    (archive/archive-fragment nil 0)
-   [:form.space-y-2 {:method "post"
+   [:form.space-y-2 {:x-data "{selected: []}"
+                     :method "post"
                      :action "/contacts"}
     [:table
      [:thead
@@ -72,15 +108,13 @@
        [:a.btn {:href (str "?page=" (inc page)
                            (when (not (nil? q))
                              (str "&?q=" q)))} "next"])
-     [:button {:hx-delete "/contacts"
-               :hx-confirm "are you sure you want to delete these contacts?"
-               :hx-target "body"}
-      "delete selected contacts"]]]
+
+     (toolbar-fragment)]]
    [:p {:hx-get "/contacts/count" :hx-trigger "revealed"}
     [:span.htmx-indicator.spinner]]
    [:p
     [:a {:href "/contacts/new"} "add contact"]]
-   [:noscript (noscript-forms contacts)]))
+   [:noscript (noscript-forms-fragment contacts)]))
 
 (defn contacts-search [contacts text]
   (let [re (re-pattern (str "(?i)" text))]
