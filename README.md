@@ -10,7 +10,7 @@ Screenshot |
 
 ## Running the app
 ```sh
-clj -M -n contact.main
+clj -M -m contact.main
 ```
 
 ## License
