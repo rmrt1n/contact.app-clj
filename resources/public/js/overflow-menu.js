@@ -1,5 +1,5 @@
 function overflowMenu(subtree = document) {
-  document.querySelectorAll("[data-overflow-menu]").forEach((menuRoot) => {
+  subtree.querySelectorAll("[data-overflow-menu]").forEach((menuRoot) => {
     const btn = menuRoot.querySelector("[aria-haspopup]")
     const menu = menuRoot.querySelector("[role=menu]")
     const items = [...menuRoot.querySelectorAll("[role=menu-item]")]
@@ -52,4 +52,3 @@ function overflowMenu(subtree = document) {
 }
 
 addEventListener("htmx:load", (e) => overflowMenu(e.target))
-console.log("testing")
